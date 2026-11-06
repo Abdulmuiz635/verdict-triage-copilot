@@ -1,0 +1,6 @@
+# CODEOWNERS for the payments-api service.
+# Verdict reads the "*" rule to find the service owner and routes the finding to them.
+# The owner identifier is the owner's Atlassian account email.
+# This is a sample. Put a copy at the root of the matching PUBLIC Bitbucket repo.
+
+*   payments-lead@example.com

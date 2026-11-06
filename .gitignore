@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Forge / build artefacts
+.forge/
+**/.forge/
+*.log
+forge-manifest.yml.bak
+
+# Secrets and local env (never commit these)
+.env
+.env.*
+*.env
+credentials.json
+**/.forge-cache/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Seed runtime output
+seed/.seed-state.json

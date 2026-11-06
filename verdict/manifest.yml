@@ -1,0 +1,110 @@
+modules:
+  rovo:agent:
+    - key: verdict-agent
+      name: Verdict
+      description: Grounded security vulnerability triage copilot. Explains priority
+        with cited threat intelligence.
+      prompt: >
+        You are Verdict, a security vulnerability triage copilot that helps a
+        security engineer understand and act on a finding.
+
+        When the user asks you to triage a finding, explain its priority, or asks
+        what to do about it, call the get-verdict-context action with the current
+        Jira issue's key to retrieve the grounded facts: the computed priority,
+        severity, CVSS and its source, CVE, affected service, service-criticality
+        tier, exposure, CISA KEV known-exploited status, EPSS probability, the NVD
+        description, the resolved owner, any duplicate (already-fixed or open),
+        and the source links.
+
+        Then answer in clear, flowing, human language a security engineer can act
+        on in seconds. Lead with the priority and the single most important
+        reason. Weave the facts into readable prose, do not dump a list. Where the
+        data says so, mention that it is actively exploited (CISA KEV) and the
+        EPSS chance of exploitation in the next 30 days; that the priority
+        reflects the service criticality tier and exposure; that it duplicates
+        another issue (name it, and whether that work was already fixed); and who
+        owns it. Finish with one or two short, specific recommended actions.
+
+        Rules you must never break: state only facts returned by the action. Never
+        invent a CVE detail, CVSS score, exploitation status, person, service or
+        issue key. Cite the sources the action provides. If the action reports
+        there is not enough data to triage, do not guess: say exactly what is
+        missing and ask the user to add it and re-run. This is advisory; remind
+        the user to confirm before acting when it matters.
+      conversationStarters:
+        - Triage this finding
+        - Why is this finding the priority it is?
+        - What should we do about this finding?
+      skills:
+        - verdict-triage-skill
+      actions:
+        - get-verdict-context
+  rovo:skill:
+    - key: verdict-triage-skill
+      source:
+        dir: skills/verdict-triage-skill
+  action:
+    - key: get-verdict-context
+      name: Get verdict context
+      function: getVerdictContext
+      actionVerb: GET
+      description: >
+        Returns the grounded triage context for a security finding: its reported
+        severity, CVSS, CVE id, affected service and description, the
+        deterministically computed priority, and threat intelligence from NVD,
+        CISA KEV and EPSS, each with its source link.
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+          description: The Jira issue key of the finding to triage, for example KAN-6.
+  jira:issueContext:
+    - key: jira-issue-panel
+      resource: main-ui-kit/entry
+      resolver:
+        function: resolver
+      render: native
+      title: Verdict
+      label: Verdict
+      icon: https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg
+  function:
+    - key: onIssueCreated
+      handler: index.onIssueCreated
+    - key: getVerdictContext
+      handler: index.getVerdictContext
+    - key: resolver
+      handler: jira-issue-panel.handler
+  trigger:
+    - key: finding-created
+      function: onIssueCreated
+      events:
+        - avi:jira:created:issue
+  llm:
+    - key: verdict-llm
+      model:
+        - claude
+resources:
+  - key: main-ui-kit
+    path: src/frontend/main-ui-kit
+    entry:
+      entry: jira-issue-panel.jsx
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
+    - storage:app
+  external:
+    fetch:
+      backend:
+        - address: services.nvd.nist.gov
+        - address: www.cisa.gov
+        - address: api.first.org
+        - address: api.bitbucket.org
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/a2a5aa36-e9ff-4477-8693-7bbf53e20af7

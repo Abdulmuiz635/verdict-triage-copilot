@@ -1,0 +1,60 @@
+[
+  {
+    "id": "log4shell-payments",
+    "summary": "Log4Shell RCE in payments-api logging dependency",
+    "description": "The payments-api service bundles a vulnerable Log4j version. The endpoint is internet-facing and processes cardholder data, so a crafted request header can trigger remote code execution. Flagged by the dependency scanner on the public payments edge.",
+    "severity": "Critical",
+    "cvss": 10.0,
+    "cve": "CVE-2021-44228",
+    "service": "payments-api"
+  },
+  {
+    "id": "xz-auth-original",
+    "summary": "xz-utils backdoor present in auth-service base image",
+    "description": "The auth-service container base image ships a backdoored xz-utils build. This is the original finding for this CVE and is tracked to resolution here. Internet-facing authentication surface.",
+    "severity": "Critical",
+    "cvss": 10.0,
+    "cve": "CVE-2024-3094",
+    "service": "auth-service"
+  },
+  {
+    "id": "xz-reporting-duplicate",
+    "summary": "xz-utils backdoor flagged again in reporting-ui image",
+    "description": "The same xz-utils backdoor was flagged in the reporting-ui build. This service is internal, behind SSO. Expected to be recognised as a duplicate of the auth-service finding for the same CVE.",
+    "severity": "Critical",
+    "cvss": 10.0,
+    "cve": "CVE-2024-3094",
+    "service": "reporting-ui"
+  },
+  {
+    "id": "rapid-reset-auth",
+    "summary": "HTTP/2 Rapid Reset DoS on auth-service gateway",
+    "description": "The auth-service gateway is vulnerable to the HTTP/2 Rapid Reset attack. The listener is public-facing, so an attacker can exhaust server resources with rapid stream cancellation.",
+    "severity": "High",
+    "cvss": 7.5,
+    "cve": "CVE-2023-44487",
+    "service": "auth-service"
+  },
+  {
+    "id": "spring4shell-gapfill",
+    "summary": "Spring framework data-binding flaw in payments-api",
+    "description": "A scanner flagged this CVE on the internet-facing payments-api but did not report a severity or a CVSS score. Verdict should gap-fill the score from NVD and prioritise accordingly.",
+    "cve": "CVE-2022-22965",
+    "service": "payments-api"
+  },
+  {
+    "id": "zlib-low-reporting",
+    "summary": "Heap over-read in zlib used by reporting-ui",
+    "description": "A low-severity heap over-read in a zlib routine used by the internal reporting-ui. The service is internal only, not internet-facing, and the affected path is not reachable from user input.",
+    "severity": "Low",
+    "cvss": 2.5,
+    "cve": "CVE-2022-37434",
+    "service": "reporting-ui"
+  },
+  {
+    "id": "escalation-missing-data",
+    "summary": "Possible insecure deserialization reported by pentester",
+    "description": "A pentester noted possible insecure deserialization somewhere in the stack but did not attach a CVE, a CVSS score, a severity, or the affected service. Verdict should decline to prioritise and ask a human to add the missing detail.",
+    "service": ""
+  }
+]
