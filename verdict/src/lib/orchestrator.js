@@ -152,7 +152,6 @@ export async function triageIssue(issueKey, { force = false } = {}) {
       action: 'duplicate-of-open',
       priority: ctx.priority,
       duplicateOf: op.key,
-      owner: ctx.owner?.displayName || null,
       cve: ctx.cve,
       trigger,
     });
@@ -178,7 +177,6 @@ export async function triageIssue(issueKey, { force = false } = {}) {
     severity: ctx.severity,
     cvss: ctx.cvss,
     service: ctx.service,
-    owner: ctx.owner?.displayName || null,
     kev: ctx.intel?.kev ?? null,
     decidedBy: 'code',
     ai: !!narrative,
